@@ -16,9 +16,9 @@
 package com.alibaba.csp.sentinel.dashboard;
 
 import com.alibaba.csp.sentinel.init.InitExecutor;
-
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.data.elasticsearch.repository.config.EnableElasticsearchRepositories;
 
 /**
  * Sentinel dashboard application.
@@ -26,6 +26,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * @author Carpenter Lee
  */
 @SpringBootApplication
+@EnableElasticsearchRepositories
 public class DashboardApplication {
 
     public static void main(String[] args) {
@@ -36,4 +37,5 @@ public class DashboardApplication {
     private static void triggerSentinelInit() {
         new Thread(() -> InitExecutor.doInit()).start();
     }
+
 }

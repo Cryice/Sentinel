@@ -15,8 +15,7 @@
  */
 package com.alibaba.csp.sentinel.dashboard.util;
 
-import java.util.List;
-
+import com.alibaba.csp.sentinel.dashboard.datasource.entity.rule.*;
 import com.alibaba.csp.sentinel.slots.block.authority.AuthorityRule;
 import com.alibaba.csp.sentinel.slots.block.degrade.DegradeRule;
 import com.alibaba.csp.sentinel.slots.block.flow.FlowRule;
@@ -24,9 +23,12 @@ import com.alibaba.csp.sentinel.slots.block.flow.param.ParamFlowRule;
 import com.alibaba.csp.sentinel.slots.system.SystemRule;
 import com.alibaba.csp.sentinel.util.StringUtil;
 import com.alibaba.fastjson.JSON;
-
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.List;
 
 /**
  * @author Eric Zhao
@@ -45,9 +47,27 @@ public final class RuleUtils {
         }
     }
 
+    public static List<FlowRuleEntity> parseFlowRuleEntity(String body) {
+        try {
+            return JSON.parseArray(body, FlowRuleEntity.class);
+        } catch (Exception e) {
+            LOGGER.error("parser FlowRuleEntity error: ", e);
+            return null;
+        }
+    }
+
     public static List<DegradeRule> parseDegradeRule(String body) {
         try {
             return JSON.parseArray(body, DegradeRule.class);
+        } catch (Exception e) {
+            LOGGER.error("parser DegradeRule error: ", e);
+            return null;
+        }
+    }
+
+    public static List<DegradeRuleEntity> parseDegradeRuleEntity(String body) {
+        try {
+            return JSON.parseArray(body, DegradeRuleEntity.class);
         } catch (Exception e) {
             LOGGER.error("parser DegradeRule error: ", e);
             return null;
@@ -60,6 +80,18 @@ public final class RuleUtils {
         }
         try {
             return JSON.parseArray(body, AuthorityRule.class);
+        } catch (Exception e) {
+            LOGGER.error("Error when parsing authority rules", e);
+            return null;
+        }
+    }
+
+    public static List<AuthorityRuleEntity> parseAuthorityRuleEntity(String body) {
+        if (StringUtil.isBlank(body)) {
+            return null;
+        }
+        try {
+            return JSON.parseArray(body, AuthorityRuleEntity.class);
         } catch (Exception e) {
             LOGGER.error("Error when parsing authority rules", e);
             return null;
@@ -84,11 +116,46 @@ public final class RuleUtils {
         }
     }
 
+    public static List<ParamFlowRuleEntity> parseParamFlowRuleEntity(String body) {
+        if (StringUtil.isBlank(body)) {
+            return null;
+        }
+        try {
+            return JSON.parseArray(body, ParamFlowRuleEntity.class);
+        } catch (Exception e) {
+            LOGGER.error("Error when parsing parameter flow rules entity: ", e);
+            return null;
+        }
+    }
+
     public static List<SystemRule> parseSystemRule(String body) {
         try {
             return JSON.parseArray(body, SystemRule.class);
         } catch (Exception e) {
             LOGGER.info("parser SystemRule error: ", e);
+            return null;
+        }
+    }
+
+    public static List<SystemRuleEntity> parseSystemRuleEntity(String body) {
+        if (StringUtil.isBlank(body)) {
+            return null;
+        }
+        try {
+            return JSON.parseArray(body, SystemRuleEntity.class);
+        } catch (Exception e) {
+            LOGGER.info("parser SystemRule error: ", e);
+            return null;
+        }
+    }
+
+    private final static ObjectMapper mapper = new ObjectMapper();
+
+    public static String toJSONString(Object rules) {
+        try {
+            return mapper.writeValueAsString(rules);
+        } catch (JsonProcessingException e) {
+            LOGGER.info("Rules to JSON string error: ", e);
             return null;
         }
     }
